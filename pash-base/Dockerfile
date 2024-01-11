@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 ARG RELEASE=latest
 
 RUN apt-get update -y && apt-get update --fix-missing
