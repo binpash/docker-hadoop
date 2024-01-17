@@ -12,7 +12,7 @@ ENV PASH_TOP="${DISH_TOP}/pash"
 # RUN git clone https://github.com/binpash/dish.git /opt/dish --recursive
 
 # Clone and checkout to the specified dish branch
-RUN git clone -b ft-future https://github.com/binpash/dish.git /opt/dish --recurse-submodules
+RUN git clone -b ft-future-base https://github.com/binpash/dish.git /opt/dish --recurse-submodules
 
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
