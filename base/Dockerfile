@@ -1,6 +1,6 @@
 ARG BASE=pash-base
 ARG RELEASE=latest
-
+ARG REBUILD_DISH
 FROM $BASE:$RELEASE
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -40,7 +40,8 @@ ENV HADOOP_CLASSPATH=/usr/lib/jvm/java-8-openjdk-amd64/lib/tools.jar
 ENV MULTIHOMED_NETWORK=1
 ENV USER=root
 ENV PATH $HADOOP_HOME/bin/:$PATH
-
+ENV DISH_TOP="/opt/dish"
+# ENV GOPATH="/usr/local/go/bin"
 ADD ./docker-hadoop/base/entrypoint.sh /entrypoint.sh
 
 RUN chmod a+x /entrypoint.sh

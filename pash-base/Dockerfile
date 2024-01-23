@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 ARG RELEASE=latest
-
+ARG REBUILD_DISH
 RUN apt-get update -y && apt-get update --fix-missing
 ## Note: Even though PaSh's distro-deps.sh should understand whether we are in docker
 ##       and not need sudo, it doesn't in this case.
@@ -17,7 +17,10 @@ RUN git clone -b ft-future-base https://github.com/binpash/dish.git /opt/dish --
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
 RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
-RUN yes | bash ${DISH_TOP}/scripts/setup-dish.sh
+
+RUN if [ "$REBUILD_DISH" != true ]; then \
+    yes | bash ${DISH_TOP}/scripts/setup-dish.sh; \
+    fi
 
 RUN if [ "$RELEASE" = "eval" ]; then \
     apt-get update && cd ${DISH_TOP}/evaluation/distr_benchmarks && ./install_all_deps.sh; \
