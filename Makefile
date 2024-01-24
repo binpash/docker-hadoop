@@ -7,25 +7,16 @@ else
 RELEASE := latest
 endif
 
-
-ifdef REBUILD_DISH
-REBUILD_DISH := true
-else
-REBUILD_DISH := false
-endif
-
 ifdef NO_CACHE
 BUILD_FLAG := --no-cache
-REBUILD_DISH := true
 else
 BUILD_FLAG :=
-REBUILD_DISH := false
 endif
 
 build:
 #   https://stackoverflow.com/a/34392052/15104821
-	docker build $(BUILD_FLAG) -t pash-base:$(RELEASE) -f ./pash-base/Dockerfile --build-arg RELEASE=$(RELEASE) --build-arg REBUILD_DISH=$(REBUILD_DISH) ..
-	docker build $(BUILD_FLAG) -t hadoop-pash-base:$(RELEASE) -f ./base/Dockerfile --build-arg RELEASE=$(RELEASE) --build-arg REBUILD_DISH=$(REBUILD_DISH) ..
+	docker build $(BUILD_FLAG) -t pash-base:$(RELEASE) -f ./pash-base/Dockerfile --build-arg RELEASE=$(RELEASE) ..
+	docker build $(BUILD_FLAG) -t hadoop-pash-base:$(RELEASE) -f ./base/Dockerfile --build-arg RELEASE=$(RELEASE) ..
 
 	docker build $(BUILD_FLAG) -t hadoop-namenode:$(RELEASE) --build-arg RELEASE=$(RELEASE) ./namenode
 	docker build $(BUILD_FLAG) -t hadoop-datanode:$(RELEASE) --build-arg RELEASE=$(RELEASE) ./datanode

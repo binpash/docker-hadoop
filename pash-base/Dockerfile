@@ -17,10 +17,7 @@ RUN git clone -b ft-future-base https://github.com/binpash/dish.git /opt/dish --
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
 RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
-
-RUN if [ "$REBUILD_DISH" != true ]; then \
-    yes | bash ${DISH_TOP}/scripts/setup-dish.sh; \
-    fi
+RUN yes | bash ${DISH_TOP}/scripts/setup-dish.sh;
 
 RUN if [ "$RELEASE" = "eval" ]; then \
     apt-get update && cd ${DISH_TOP}/evaluation/distr_benchmarks && ./install_all_deps.sh; \
