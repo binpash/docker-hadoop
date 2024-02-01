@@ -55,6 +55,7 @@ services:
     volumes:
       - ${PWD}/dish-config.json:/opt/dish/pash/cluster.json
       - ${PWD}/sample-script.sh:/opt/dish/sample.sh
+      - ${PWD}/words-repeated.sh:/opt/dish/words-repeated.sh
 
   datanode1:
     image: hadoop-datanode:${RELEASE}

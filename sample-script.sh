@@ -1,1 +1,1 @@
-hdfs dfs -cat /README.md | grep the | wc
+hdfs dfs -cat /words-repeated.txt | grep ARPANET
