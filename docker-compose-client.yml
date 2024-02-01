@@ -13,7 +13,7 @@ services:
       - ./hadoop.env
     command:
       [
-        "${DISH_TOP}/runtime/dspash/file_reader/discovery_server"
+        "${DISH_TOP}/runtime/bin/discovery_server"
       ]
 networks:
   hbase:

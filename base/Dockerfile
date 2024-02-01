@@ -52,8 +52,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # This requires source code to be cloned already
 COPY . /opt/dish
 
-RUN export PATH=$PATH:/usr/local/go/bin && cd /opt/dish/runtime/dspash/file_reader && \
-    go build -o dfs_split_reader client/dfs_split_reader.go && \
-    go build -o filereader_server server/server.go && \
-    go build -o discovery_server server/discovery_server.go && \
-    go build -o datastream_client client/datastream.go
+RUN export PATH=$PATH:/usr/local/go/bin && /opt/dish/runtime/scripts/build.sh
