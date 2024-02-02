@@ -52,6 +52,7 @@ services:
       - ./hadoop.env
     ports:
       - "8042:8042"
+      - "5001:5001"
     volumes:
       - ${PWD}/dish-config.json:/opt/dish/pash/cluster.json
       - ${PWD}/sample-script.sh:/opt/dish/sample.sh
