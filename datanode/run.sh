@@ -2,6 +2,7 @@
 
 # pull latest changes (added for convenience) and start worker
 cd $PASH_TOP
+git config --global --add safe.directory /opt/dish/pash
 git pull
 cd -
 # TODO: set up logrotate
@@ -13,4 +14,12 @@ if [ ! -d $datadir ]; then
   exit 2
 fi
 
-$HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR datanode
+# Datanode is background process, so we can kill it
+$HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR datanode &> whdfs.log & 
+
+# Check if --loop parameter is passed
+if [[ "$@" == *"--loop"* ]]; then
+  # Keep the container running via main process
+  echo "Starting datanode in loop mode"
+  while true; do sleep 1; done
+fi
