@@ -41,8 +41,15 @@ ENV MULTIHOMED_NETWORK=1
 ENV USER=root
 ENV PATH $HADOOP_HOME/bin/:$PATH
 
-ADD entrypoint.sh /entrypoint.sh
+ADD ./docker-hadoop/base/entrypoint.sh /entrypoint.sh
 
 RUN chmod a+x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
+
+# This is required because RUN caches commands
+# We could do this at the beginning but then we would have to rebuild all the heavy work above
+# This requires source code to be cloned already
+COPY . /opt/dish
+
+RUN export PATH=$PATH:/usr/local/go/bin && /opt/dish/runtime/scripts/build.sh
