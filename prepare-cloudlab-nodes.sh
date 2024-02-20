@@ -42,7 +42,7 @@ clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_
 ##
 ## Setup docker location
 ##
-dockerd_config='echo -e { "data-root": "/mydata" }'
+dockerd_config='echo -e "{\n\t\"data-root\": \"/mydata\"\n}"'
 clush --hostfile hostnames.txt -l $user -b "sudo bash -c '$dockerd_config > /etc/docker/daemon.json' && sudo service docker restart"
 ##
 ## Initialize a swarm from the manager

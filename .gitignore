@@ -1,1 +1,6 @@
 data/
+
+# swarm
+swarm_advertise_output.txt
+manifest.xml
+hostnames.txt
