@@ -16,7 +16,7 @@
 manifest=${1?"ERROR: No cloudlab manifest file given"}
 user=${2?"ERROR: No cloudlab user given"}
 
-pip install --user ClusterShell -q
+pip install ClusterShell -q
 
 ## Optionally the caller can give us a private key for the ssh
 key=$3
@@ -36,14 +36,13 @@ cat hostnames.txt
 clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user \
     -b "curl -fsSL https://get.docker.com -o get-docker.sh && \
         sudo sh get-docker.sh && \
-        sudo groupadd docker && \
         sudo usermod -aG docker $user && \
         newgrp docker"
 
 ##
 ## Setup docker location
 ##
-dockerd_config='echo -e "{\n\t\"data-root\": \"/mydata\"\n}"'
+dockerd_config='echo -e { "data-root": "/mydata" }'
 clush --hostfile hostnames.txt -l $user -b "sudo bash -c '$dockerd_config > /etc/docker/daemon.json' && sudo service docker restart"
 ##
 ## Initialize a swarm from the manager
@@ -71,7 +70,7 @@ clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag
 ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
 ## Just checking that the workers have joined
 sudo docker node ls
-git clone https://github.com/binpash/docker-hadoop.git
+git clone -b ft-orig https://github.com/binpash/docker-hadoop.git
 cd docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
