@@ -9,7 +9,8 @@ fi
 if [ -z "$DISH_TOP" ]
 then
     # If not set, assign a default path
-    export DISH_TOP=$(realpath $(dirname "$0")/../..)
+    # export DISH_TOP=$(realpath $(dirname "$0")/../..)
+    export DISH_TOP=/opt/dish
 fi
 
 echo "Generating config"
