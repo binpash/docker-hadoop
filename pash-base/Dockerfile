@@ -1,19 +1,23 @@
 FROM ubuntu:22.04
 ARG RELEASE=latest
-
+ARG REBUILD_DISH
 RUN apt-get update -y && apt-get update --fix-missing
 ## Note: Even though PaSh's distro-deps.sh should understand whether we are in docker
 ##       and not need sudo, it doesn't in this case.
 RUN apt-get install -y git vim iputils-ping sudo
+RUN apt-get install -y libtool m4 automake
 ENV PASH_HOST="docker"
 ENV DISH_TOP="/opt/dish"
 ENV PASH_TOP="${DISH_TOP}/pash"
 # download PaSh
 # RUN git clone https://github.com/binpash/dish.git /opt/dish --recursive
-RUN git clone -b ft-orig-base https://github.com/binpash/dish.git /opt/dish --recurse-submodules
+
+# Clone and checkout to the specified dish branch
+RUN git clone -b ft-future-base https://github.com/binpash/dish.git /opt/dish --recurse-submodules
+
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
-RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
+# RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
 RUN yes | bash ${DISH_TOP}/scripts/setup-dish.sh
 
 RUN if [ "$RELEASE" = "eval" ]; then \

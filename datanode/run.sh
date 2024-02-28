@@ -5,6 +5,8 @@ cd $PASH_TOP
 git pull
 cd -
 # TODO: set up logrotate
+
+# echo "y" | $PASH_TOP/scripts/setup-pash.sh 
 bash $PASH_TOP/compiler/dspash/worker.sh &> worker.log &
 
 datadir=`echo $HDFS_CONF_dfs_datanode_data_dir | perl -pe 's#file://##'`
