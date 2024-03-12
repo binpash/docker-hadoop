@@ -2,7 +2,6 @@
 
 # pull latest changes (added for convenience) and start worker
 cd $PASH_TOP
-git branch --set-upstream-to=origin/<branch> ft-orig-naive
 git config --global --add safe.directory /opt/dish/pash
 git pull
 cd -
