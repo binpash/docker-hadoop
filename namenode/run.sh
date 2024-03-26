@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # The discovery server needs to be running from any machine we intend to use
-$DISH_TOP/runtime/dspash/file_reader/discovery_server &> /dev/null &
+# This maybe redundant with the centeralized discovery server?
+$DISH_TOP/runtime/bin/discovery_server &> /dev/null &
 
 namedir=`echo $HDFS_CONF_dfs_namenode_name_dir | perl -pe 's#file://##'`
 if [ ! -d $namedir ]; then
