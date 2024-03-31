@@ -47,9 +47,11 @@ RUN chmod a+x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
+# No longer required as we are mounting the directory anyway
+
 # This is required because RUN caches commands
 # We could do this at the beginning but then we would have to rebuild all the heavy work above
 # This requires source code to be cloned already
-COPY . /opt/dish
+# COPY . /opt/dish
 
 RUN export PATH=$PATH:/usr/local/go/bin && /opt/dish/runtime/scripts/build.sh
