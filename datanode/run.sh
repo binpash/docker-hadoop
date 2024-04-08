@@ -6,7 +6,12 @@ git config --global --add safe.directory /opt/dish/pash
 git pull
 cd -
 # TODO: set up logrotate
-bash $PASH_TOP/compiler/dspash/worker.sh &> worker.log &
+if [[ "$@" == *"resurrect"* ]]; then
+  # This appends to worker.log while also capturing both stdout and stderr
+  bash $PASH_TOP/compiler/dspash/worker.sh --resurrect >> worker.log 2>&1 &
+else
+  bash $PASH_TOP/compiler/dspash/worker.sh &> worker.log &
+fi
 
 datadir=`echo $HDFS_CONF_dfs_datanode_data_dir | perl -pe 's#file://##'`
 if [ ! -d $datadir ]; then
