@@ -36,6 +36,10 @@ services:
       - ./hadoop.env
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
     deploy:
       mode: global
       endpoint_mode: dnsrr
@@ -79,6 +83,10 @@ services:
       SERVICE_PRECONDITION: "namenode:9870 datanode:9864 resourcemanager:8088"
     env_file:
       - ./hadoop.env
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
     deploy:
       mode: global
       endpoint_mode: dnsrr

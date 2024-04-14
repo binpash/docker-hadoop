@@ -55,6 +55,10 @@ services:
       - "5001:5001"
     volumes:
       - ..:/opt/dish
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
 
   datanode1:
     image: hadoop-datanode:${RELEASE}
@@ -66,6 +70,10 @@ services:
       - ..:/opt/dish
     env_file:
       - ./hadoop.env
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
 
   datanode2:
     image: hadoop-datanode:${RELEASE}
@@ -77,6 +85,10 @@ services:
       - ..:/opt/dish
     env_file:
       - ./hadoop.env
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
 
   datanode3:
     image: hadoop-datanode:${RELEASE}
@@ -88,6 +100,10 @@ services:
       - ..:/opt/dish
     env_file:
       - ./hadoop.env
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1000000
 
 volumes:
   hadoop_namenode:
