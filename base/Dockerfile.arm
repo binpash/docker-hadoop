@@ -14,13 +14,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64/
 
-RUN curl -O https://dist.apache.org/repos/dist/release/hadoop/common/KEYS
+RUN curl -O https://downloads.apache.org/hadoop/common/KEYS
 
 RUN gpg --import KEYS
 
-# https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.4.0/hadoop-3.4.0-aarch64.tar.gz
+# https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0-aarch64.tar.gz
 ENV HADOOP_VERSION 3.4.0
-ENV HADOOP_URL https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}-aarch64.tar.gz
+ENV HADOOP_URL https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}-aarch64.tar.gz
 
 RUN set -x \
     && curl -fSL "$HADOOP_URL" -o /tmp/hadoop.tar.gz \
