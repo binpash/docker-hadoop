@@ -13,7 +13,7 @@ services:
       - ./hadoop.env
     command:
       [
-        "${DISH_TOP}/runtime/bin/discovery_server"
+        "bash ${DISH_TOP}/pash/compiler/dspash/worker.sh &> worker.log"
       ]
 networks:
   hbase:
