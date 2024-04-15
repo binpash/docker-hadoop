@@ -53,11 +53,11 @@ if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.bind-host 0.0.0.0
     addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.bind-host 0.0.0.0
     addProperty /etc/hadoop/yarn-site.xml yarn.timeline-service.bind-host 0.0.0.0
-    addProperty /etc/hadoop/yarn-site.xml yarn.application.classpath /opt/hadoop-3.2.2/share/hadoop/common/*,/opt/hadoop-3.2.2/share/hadoop/common/lib*,/opt/hadoop-3.2.2/share/hadoop/hdfs/*,/opt/hadoop-3.2.2/share/hadoop/hdfs/lib/*,/opt/hadoop-3.2.2/share/hadoop/mapreduce/*,/opt/hadoop-3.2.2/share/hadoop/mapreduce/lib/*,/opt/hadoop-3.2.2/share/hadoop/yarn/*,/opt/hadoop-3.2.2/share/hadoop/yarn/lib/*
+    addProperty /etc/hadoop/yarn-site.xml yarn.application.classpath /opt/hadoop-3.4.0/share/hadoop/common/*,/opt/hadoop-3.4.0/share/hadoop/common/lib*,/opt/hadoop-3.4.0/share/hadoop/hdfs/*,/opt/hadoop-3.4.0/share/hadoop/hdfs/lib/*,/opt/hadoop-3.4.0/share/hadoop/mapreduce/*,/opt/hadoop-3.4.0/share/hadoop/mapreduce/lib/*,/opt/hadoop-3.4.0/share/hadoop/yarn/*,/opt/hadoop-3.4.0/share/hadoop/yarn/lib/*
 
     # MAPRED
     addProperty /etc/hadoop/mapred-site.xml yarn.nodemanager.bind-host 0.0.0.0
-    addProperty /etc/hadoop/mapred-site.xml mapreduce.application.classpath '/opt/hadoop-3.2.2/share/hadoop/common/lib/*'
+    addProperty /etc/hadoop/mapred-site.xml mapreduce.application.classpath '/opt/hadoop-3.4.0/share/hadoop/common/lib/*'
 fi
 
 if [ -n "$GANGLIA_HOST" ]; then

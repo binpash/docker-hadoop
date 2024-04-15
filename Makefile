@@ -13,10 +13,19 @@ else
 BUILD_FLAG :=
 endif
 
+# Detect the architecture
+ARCH := $(shell uname -m)
+
+ifeq ($(ARCH),x86_64)
+FILE := Dockerfile
+else
+FILE := Dockerfile.arm
+endif
+
 build:
 #   https://stackoverflow.com/a/34392052/15104821
 	docker build $(BUILD_FLAG) -t pash-base:$(RELEASE) -f ./pash-base/Dockerfile --build-arg RELEASE=$(RELEASE) ..
-	docker build $(BUILD_FLAG) -t hadoop-pash-base:$(RELEASE) -f ./base/Dockerfile --build-arg RELEASE=$(RELEASE) ..
+	docker build $(BUILD_FLAG) -t hadoop-pash-base:$(RELEASE) -f ./base/$(FILE) --build-arg RELEASE=$(RELEASE) ..
 
 	docker build $(BUILD_FLAG) -t hadoop-namenode:$(RELEASE) --build-arg RELEASE=$(RELEASE) ./namenode
 	docker build $(BUILD_FLAG) -t hadoop-datanode:$(RELEASE) --build-arg RELEASE=$(RELEASE) ./datanode
@@ -28,7 +37,7 @@ build:
 wordcount:
 	docker build -t hadoop-wordcount ./submit
 	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-base:$(RELEASE) hdfs dfs -mkdir -p /input/
-	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-base:$(RELEASE) hdfs dfs -copyFromLocal -f /opt/hadoop-3.2.2/README.txt /input/
+	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-base:$(RELEASE) hdfs dfs -copyFromLocal -f /opt/hadoop-3.4.0/README.txt /input/
 	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-wordcount
 	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-base:$(RELEASE) hdfs dfs -cat /output/*
 	docker run --network ${DOCKER_NETWORK} --env-file ${ENV_FILE} hadoop-base:$(RELEASE) hdfs dfs -rm -r /output
