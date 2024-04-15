@@ -11,10 +11,7 @@ services:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop.env
-    command:
-      [
-        "bash ${DISH_TOP}/pash/compiler/dspash/worker.sh &> worker.log"
-      ]
+    command: "bash ${DISH_TOP}/pash/compiler/dspash/worker.sh &> worker.log"
 networks:
   hbase:
     name: hbase
