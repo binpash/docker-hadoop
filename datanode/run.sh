@@ -1,15 +1,16 @@
 #!/bin/bash
 
-# pull latest changes (added for convenience) and start worker
-cd $PASH_TOP
-git config --global --add safe.directory /opt/dish/pash
-git pull
-cd -
 # TODO: set up logrotate
 if [[ "$@" == *"resurrect"* ]]; then
   # This appends to worker.log while also capturing both stdout and stderr
+  # When running with resurrect flag, it must not be in deploying the docker image so no need to git pull
   bash $PASH_TOP/compiler/dspash/worker.sh --resurrect >> worker.log 2>&1 &
 else
+  # pull latest changes (added for convenience) and start worker
+  cd $PASH_TOP
+  git config --global --add safe.directory /opt/dish/pash
+  git pull
+  cd -
   bash $PASH_TOP/compiler/dspash/worker.sh &> worker.log &
 fi
 
