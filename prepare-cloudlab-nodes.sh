@@ -70,7 +70,7 @@ clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag
 ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
 ## Just checking that the workers have joined
 sudo docker node ls
-git clone -b ft-orig-optimized https://github.com/binpash/dish.git --recurse-submodules
+git clone -b swarm-kill-test https://github.com/binpash/dish.git --recurse-submodules
 cd dish/docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
