@@ -14,4 +14,8 @@ RUN chmod a+x /run.sh
 
 EXPOSE 9864
 
-CMD ["/run.sh --loop"]
+# Launch the primary service in the background
+CMD ["/run.sh --loop"] &
+
+# Keep the container running in the foreground
+CMD tail -f /dev/null
