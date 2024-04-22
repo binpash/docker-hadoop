@@ -4,13 +4,13 @@ ARG RELEASE=latest
 RUN apt-get update -y && apt-get update --fix-missing
 ## Note: Even though PaSh's distro-deps.sh should understand whether we are in docker
 ##       and not need sudo, it doesn't in this case.
-RUN apt-get install -y git vim iputils-ping sudo
+RUN apt-get install -y git vim iputils-ping sudo jq dnsutils
 ENV PASH_HOST="docker"
 ENV DISH_TOP="/opt/dish"
 ENV PASH_TOP="${DISH_TOP}/pash"
 # download PaSh
 # RUN git clone https://github.com/binpash/dish.git /opt/dish --recursive
-RUN git clone -b swarm-kill-test https://github.com/binpash/dish.git /opt/dish --recurse-submodules
+RUN git clone -b ft-orig-optimized https://github.com/binpash/dish.git /opt/dish --recurse-submodules
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
 RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
