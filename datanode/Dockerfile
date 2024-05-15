@@ -3,7 +3,7 @@ ARG RELEASE=latest
 
 FROM $BASE:$RELEASE
 
-HEALTHCHECK CMD curl -f http://localhost:9864/ || exit 1
+HEALTHCHECK CMD pgrep -f worker.py || exit 1
 
 ENV HDFS_CONF_dfs_datanode_data_dir=file:///hadoop/dfs/data
 RUN mkdir -p /hadoop/dfs/data
