@@ -7,11 +7,12 @@ services:
       - hbase
     volumes:
       - ${PWD}/dspash-config.json:${DISH_TOP}/pash/cluster.json
+      - ${PWD}/base/run.sh:/run.sh
     environment:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop.env
-    command: "bash ${DISH_TOP}/pash/compiler/dspash/worker.sh &> worker.log"
+    command: "/run.sh"
 networks:
   hbase:
     name: hbase
