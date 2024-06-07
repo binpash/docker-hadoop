@@ -3,6 +3,7 @@ version: '3.5'
 services:
   namenode:
     image: localhost:5000/hadoop-namenode:$RELEASE
+    privileged: true
     networks:
       - hbase
     volumes:
@@ -28,6 +29,7 @@ services:
   datanode:
     image: localhost:5000/hadoop-datanode:$RELEASE
     hostname: "{{.Node.Hostname}}-datanode"
+    privileged: true
     networks:
       - hbase
     volumes:
@@ -54,6 +56,7 @@ services:
 
   resourcemanager:
     image: localhost:5000/hadoop-resourcemanager:$RELEASE
+    privileged: true
     networks:
       - hbase
     environment:
@@ -77,6 +80,7 @@ services:
 
   nodemanager:
     image: localhost:5000/hadoop-nodemanager:$RELEASE
+    privileged: true
     networks:
       - hbase
     environment:
@@ -101,6 +105,7 @@ services:
 
   historyserver:
     image: localhost:5000/hadoop-historyserver:$RELEASE
+    privileged: true
     networks:
       - hbase
     volumes:
