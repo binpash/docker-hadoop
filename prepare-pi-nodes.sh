@@ -1,23 +1,18 @@
 #!/bin/bash
 
 ##
-## 1. Installs docker on all pi-hive machines in the manifest
-## 2. Initializes a docker swarm in all of them
-## 3. Installs docker-hadoop on the manager
+## 0. [Pre-requisite] Installs docker on all pi-hive machines in the manifest
+## 1. Initializes a docker swarm in all of them
+## 2. Installs docker-hadoop on the manager
 ##
 ## Invoke this script like this:
 ## `./prepare-pi-nodes.sh pi_username pi_passwd ~/.ssh/rsa_key_for_pi`
 ##
 ## where:
 ##  the first argument is the pi-cluster username
-##  the second argument is the pi-cluster password
-##  the third argument is the pi-cluster key optionally (if you pass that manually to ssh)
+##  the second argument is the pi-cluster key optionally (if you pass that manually to ssh)
 
 user=${1?"ERROR: No pi-cluster user given"}
-passwd=${2?"ERROR: No pi-passwd given"}
-
-
-sudo apt update && yes | sudo apt install clustershell
 
 ## Optionally the caller can give us a private key for the ssh
 key=$3
@@ -27,6 +22,13 @@ else
     key_flag="-i ${key}"
 fi
 
+# Check if the clustershell package is installed
+if dpkg -s clustershell &> /dev/null; then
+    echo "clustershell is already installed."
+else
+    echo "clustershell is not installed. Installing..."
+    sudo apt update && yes | sudo apt install clustershell
+fi
 
 # Initialize the associative array with worker names and IP addresses
 pi_cluster_nodes=(
@@ -54,24 +56,19 @@ echo "Hosts:"
 cat hostnames.txt
 
 ##
-## Install docker on all cluster machines (already done for pi-cluster) 
-## Setup docker location (already done for pi-cluster)
-##
-
-##
 ## Initialize a swarm from the manager
 ##
 manager_hostname=$(head -n 1 hostnames.txt)
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
-echo '${passwd}' | sudo -S docker swarm init --advertise-addr $(hostname -i)
-# echo '${passwd}' | sudo -S docker swarm join-token worker
+docker swarm init --advertise-addr $(hostname -i)
+# docker swarm join-token worker
 ENDSSH
 } | tee swarm_advertise_output.txt
 
-exit
-join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed 's/^/sudo/g')
+join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed "s/[0-9.]\+:[0-9]\+/$manager_hostname/")
+
 
 ##
 ## Run join command on all swarm workers (execluding manager)
@@ -84,10 +81,10 @@ clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag
 ##
 ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
 ## Just checking that the workers have joined
-echo '${passwd}' | sudo -S docker node ls
+docker node ls
 git clone -b ft-orig-optimized https://github.com/binpash/dish.git --recurse-submodules
 cd dish/docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
-nohup echo '${passwd}' | sudo -S ./setup-swarm.sh --eval
+nohup ./setup-swarm.sh --eval
 ENDSSH
