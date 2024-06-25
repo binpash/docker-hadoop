@@ -46,9 +46,9 @@ fi
 # Wait for the registry to be fully up
 sleep 3
 
-# Check registry connection with debugging information
+Check registry connection with debugging information
 echo "Checking connection to the local Docker registry..."
-curl_output=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/v2/)
+curl_output=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:5000/v2/)
 if [ "$curl_output" != "200" ]; then
     echo "Error: Unable to connect to the local Docker registry. HTTP status code: $curl_output"
     exit 1
