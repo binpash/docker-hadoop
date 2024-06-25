@@ -1,31 +1,87 @@
 #!/bin/bash
-if [ $1 == '--eval' ]; then
+
+# Determine the release tag
+if [ "$1" == '--eval' ]; then
     export RELEASE="eval"
 else
     export RELEASE="latest"
 fi
 
+# Set Docker client timeout
+export DOCKER_CLIENT_TIMEOUT=300
+export COMPOSE_HTTP_TIMEOUT=300
 
-echo "Building the docker images"
+# Function to check if a service is running
+function service_running() {
+    local service_name="$1"
+    docker service ls --filter "name=${service_name}" --format "{{.Name}}"
+}
+
+# Function to check if a network is created
+function network_exists() {
+    local network_name="$1"
+    docker network ls --filter "name=${network_name}" --format "{{.Name}}"
+}
+
+# Build the Docker images
+echo "Building the Docker images"
 make build
 
-echo "Setting up the hbase network"
-docker network create -d overlay --attachable hbase
+# Setup the HBase network
+echo "Setting up the HBase network"
+if [ -z "$(network_exists hbase)" ]; then
+    docker network create -d overlay --attachable hbase
+else
+    echo "Network 'hbase' already exists"
+fi
 
+# Setup a local image registry
 echo "Setting up a local image registry"
-docker service create --name registry --publish published=5000,target=5000  registry:2
+if [ -z "$(service_running registry)" ]; then
+    docker service create --name registry --publish published=5000,target=5000 registry:2
+else
+    echo "Registry service is already running"
+fi
 
-# make build
-for image in hadoop-historyserver hadoop-nodemanager hadoop-resourcemanager hadoop-datanode hadoop-namenode hadoop-pash-base; 
-do 
-    echo pushing $image 
-    # docker rmi localhost:5000/$image:$RELEASE
-    docker image tag  $image:$RELEASE localhost:5000/$image:$RELEASE; 
-    docker image push  localhost:5000/$image:$RELEASE
-    
+# Wait for the registry to be fully up
+sleep 3
+
+# Check registry connection with debugging information
+echo "Checking connection to the local Docker registry..."
+curl_output=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/v2/)
+if [ "$curl_output" != "200" ]; then
+    echo "Error: Unable to connect to the local Docker registry. HTTP status code: $curl_output"
+    exit 1
+else
+    echo "Successfully connected to the local Docker registry."
+fi
+
+# Push images to the local registry
+images=(
+    "hadoop-historyserver"
+    "hadoop-nodemanager"
+    "hadoop-resourcemanager"
+    "hadoop-datanode"
+    "hadoop-namenode"
+    "hadoop-pash-base"
+)
+
+for image in "${images[@]}"; do
+    echo "Pushing $image"
+    docker image tag "$image:$RELEASE" "127.0.0.1:5000/$image:$RELEASE"
+    docker image push "127.0.0.1:5000/$image:$RELEASE"
+
+    if [ $? -ne 0 ]; then
+        echo "Error pushing $image:$RELEASE to 127.0.0.1:5000/$image:$RELEASE"
+        exit 1
+    fi
 done
 
-echo "Deploying the swarm"
+# Deploy the Swarm
+echo "Deploying the Swarm"
 docker stack deploy -c docker-compose-v3.yml hadoop
 
+# Generate the configuration
 ./gen_config.sh
+
+echo "Deployment completed successfully."
