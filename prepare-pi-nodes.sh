@@ -17,7 +17,7 @@ user=${1?"ERROR: No pi-cluster user given"}
 passwd=${2?"ERROR: No pi-passwd given"}
 
 
-pip install ClusterShell -q
+sudo apt update && yes | sudo apt install clustershell
 
 ## Optionally the caller can give us a private key for the ssh
 key=$3
@@ -54,21 +54,10 @@ echo "Hosts:"
 cat hostnames.txt
 
 ##
-## Install docker on all cluster machines
+## Install docker on all cluster machines (already done for pi-cluster) 
+## Setup docker location (already done for pi-cluster)
 ##
-clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user \
-    -b "curl -fsSL https://get.docker.com -o get-docker.sh && \
-        echo '$passwd' | sudo -S sh get-docker.sh && \
-        echo '$passwd' | sudo -S sudo usermod -aG docker $user && \
-        newgrp docker"
 
-##
-## Setup docker location
-##
-dockerd_config='echo -e "{\n\t\"data-root\": \"/mydata\"\n}"'
-clush --hostfile hostnames.txt -l $user \
-    -b "echo '$passwd' | sudo -S sudo bash -c '$dockerd_config > /etc/docker/daemon.json' && \
-        echo '$passwd' | sudo -S service docker restart"
 ##
 ## Initialize a swarm from the manager
 ##
