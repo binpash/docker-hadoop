@@ -1,135 +1,31 @@
-version: '3.5'
-
-services:
-  namenode:
-    image: localhost:5000/hadoop-namenode:$RELEASE
-    networks:
-      - hbase
-    volumes:
-      - namenode:/hadoop/dfs/name
-      - ${PWD}/dspash-config.json:${DISH_TOP}/pash/cluster.json
-    environment:
-      - CLUSTER_NAME=test
-    env_file:
-      - ./hadoop.env
-    deploy:
-      mode: replicated
-      endpoint_mode: dnsrr
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        traefik.docker.network: hbase
-        traefik.port: 9870
-
-  datanode:
-    image: localhost:5000/hadoop-datanode:$RELEASE
-    hostname: "{{.Node.Hostname}}-datanode"
-    networks:
-      - hbase
-    volumes:
-      - datanode:/hadoop/dfs/data
-    env_file:
-      - ./hadoop.env
-    environment:
-      SERVICE_PRECONDITION: "namenode:9870"
-    ulimits:
-      nofile:
-        soft: 1000000
-        hard: 1000000
-    deploy:
-      mode: global
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role != manager
-      restart_policy:
-        condition: on-failure
-      labels:
-        traefik.docker.network: hbase
-        traefik.port: 9864
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-
-  resourcemanager:
-    image: localhost:5000/hadoop-resourcemanager:$RELEASE
-    networks:
-      - hbase
-    environment:
-      SERVICE_PRECONDITION: "namenode:9870 datanode:9864"
-    env_file:
-      - ./hadoop.env
-    deploy:
-      mode: replicated
-      endpoint_mode: dnsrr
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        traefik.docker.network: hbase
-        traefik.port: 8088
-    healthcheck:
-      disable: true
-
-  nodemanager:
-    image: localhost:5000/hadoop-nodemanager:$RELEASE
-    networks:
-      - hbase
-    environment:
-      SERVICE_PRECONDITION: "namenode:9870 datanode:9864 resourcemanager:8088"
-    env_file:
-      - ./hadoop.env
-    ulimits:
-      nofile:
-        soft: 1000000
-        hard: 1000000
-    deploy:
-      mode: global
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          - node.role != manager
-      restart_policy:
-        condition: on-failure
-      labels:
-        traefik.docker.network: hbase
-        traefik.port: 8042
-
-  historyserver:
-    image: localhost:5000/hadoop-historyserver:$RELEASE
-    networks:
-      - hbase
-    volumes:
-      - hadoop_historyserver:/hadoop/yarn/timeline
-    environment:
-      SERVICE_PRECONDITION: "namenode:9870 datanode:9864 resourcemanager:8088"
-    env_file:
-      - ./hadoop.env
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
-        traefik.docker.network: hbase
-        traefik.port: 8188
-
-volumes:
-  datanode:
-  namenode:
-  hadoop_historyserver:
+#!/bin/bash
+if [ $1 == '--eval' ]; then
+    export RELEASE="eval"
+else
+    export RELEASE="latest"
+fi
 
 
-networks:
-  hbase:
-    name: hbase
-    external: true
+echo "Building the docker images"
+make build
+
+echo "Setting up the hbase network"
+docker network create -d overlay --attachable hbase
+
+echo "Setting up a local image registry"
+docker service create --name registry --publish published=5000,target=5000  registry:2
+
+# make build
+for image in hadoop-historyserver hadoop-nodemanager hadoop-resourcemanager hadoop-datanode hadoop-namenode hadoop-pash-base; 
+do 
+    echo pushing $image 
+    # docker rmi localhost:5000/$image:$RELEASE
+    docker image tag  $image:$RELEASE localhost:5000/$image:$RELEASE; 
+    docker image push  localhost:5000/$image:$RELEASE
+    
+done
+
+echo "Deploying the swarm"
+docker stack deploy -c docker-compose-v3.yml hadoop
+
+./gen_config.sh
