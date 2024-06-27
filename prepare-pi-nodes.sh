@@ -86,5 +86,5 @@ git clone -b ft-orig-optimized https://github.com/binpash/dish.git --recurse-sub
 cd dish/docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
-nohup ./setup-swarm.sh --eval
+nohup ./setup-pi-swarm.sh --eval
 ENDSSH
