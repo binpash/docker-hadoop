@@ -32,14 +32,14 @@ fi
 
 # Initialize the associative array with worker names and IP addresses
 pi_cluster_nodes=(
-    "worker0;10.116.70.108"
+    # "worker0;10.116.70.108"
     "worker1;10.116.70.103"
     "worker2;10.116.70.109"
     "worker3;10.116.70.112"
     "worker4;10.116.70.105"
-    "worker5;10.116.70.106"
-    "worker6;10.116.70.107"
-    "worker7;10.116.70.114"
+    # "worker5;10.116.70.106"
+    # "worker6;10.116.70.107"
+    # "worker7;10.116.70.114"
 )
 
 # Create or clear the hostnames.txt file

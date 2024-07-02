@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   namenode:
-    image: 10.116.70.108:5000/hadoop-namenode:$RELEASE
+    image: 10.116.70.103:5000/hadoop-namenode:$RELEASE
     networks:
       - hbase
     volumes:
@@ -26,7 +26,7 @@ services:
         traefik.port: 9870
 
   datanode:
-    image: 10.116.70.108:5000/hadoop-datanode:$RELEASE
+    image: 10.116.70.103:5000/hadoop-datanode:$RELEASE
     hostname: "{{.Node.Hostname}}-datanode"
     networks:
       - hbase
@@ -57,7 +57,7 @@ services:
       - seccomp:unconfined
 
   resourcemanager:
-    image: 10.116.70.108:5000/hadoop-resourcemanager:$RELEASE
+    image: 10.116.70.103:5000/hadoop-resourcemanager:$RELEASE
     networks:
       - hbase
     environment:
@@ -80,7 +80,7 @@ services:
       disable: true
 
   nodemanager:
-    image: 10.116.70.108:5000/hadoop-nodemanager:$RELEASE
+    image: 10.116.70.103:5000/hadoop-nodemanager:$RELEASE
     networks:
       - hbase
     environment:
@@ -104,7 +104,7 @@ services:
         traefik.port: 8042
 
   historyserver:
-    image: 10.116.70.108:5000/hadoop-historyserver:$RELEASE
+    image: 10.116.70.103:5000/hadoop-historyserver:$RELEASE
     networks:
       - hbase
     volumes:
