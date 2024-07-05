@@ -86,7 +86,7 @@ done
 
 # Deploy the Swarm
 echo "Deploying the Swarm"
-docker stack deploy --with-registry-auth -c docker-compose-v3.yml hadoop
+docker stack deploy --with-registry-auth -c docker-compose-pi-v3.yml hadoop
 
 # Generate the configuration
 ./gen_config.sh
