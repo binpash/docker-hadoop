@@ -43,6 +43,7 @@ echo "Setting up a local image registry"
 echo "Labeling the current node for registry service"
 docker node update --label-add registry=true $(hostname)
 registry_ip=$(hostname -i)
+registry_ip="localhost"
 
 if [ -z "$(service_running registry)" ]; then
     docker service create --name registry --publish published=5000,target=5000 --constraint 'node.labels.registry == true' registry:2 
