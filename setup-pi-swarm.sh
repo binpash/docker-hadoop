@@ -40,13 +40,15 @@ echo "Setting up a local image registry"
 # Label the current node (will be the manager node) for the registry service
 # We can do this here because the IPs of pi nodes are fixed
 # Without this the worker nodes can't seem to find the images in the registry
+
 echo "Labeling the current node for registry service"
 docker node update --label-add registry=true $(hostname)
 registry_ip=$(hostname -i)
-registry_ip="localhost"
+# registry_ip="localhost"
 
 if [ -z "$(service_running registry)" ]; then
-    docker service create --name registry --publish published=5000,target=5000 --constraint 'node.labels.registry == true' registry:2 
+    docker service create --name registry --network hbase --publish published=5000,target=5000 registry:2
+    # docker service create --name registry --publish published=5000,target=5000 --constraint 'node.labels.registry == true' registry:2 
 else
     echo "Registry service is already running"
 fi
@@ -84,6 +86,18 @@ for image in "${images[@]}"; do
         exit 1
     fi
 done
+
+# Ensure all nodes pull the images from the registry
+echo "Pulling images on all nodes"
+for node in $(docker node ls --format "{{.Hostname}}"); do
+    echo "Pulling images on $node"
+    ssh $node << EOF
+        for image in hadoop-nodemanager hadoop-datanode; do 
+            docker pull $registry_ip:5000/\$image:$RELEASE; 
+        done
+EOF
+done
+
 
 # Deploy the Swarm
 echo "Deploying the Swarm"
