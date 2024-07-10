@@ -40,15 +40,13 @@ echo "Setting up a local image registry"
 # Label the current node (will be the manager node) for the registry service
 # We can do this here because the IPs of pi nodes are fixed
 # Without this the worker nodes can't seem to find the images in the registry
-
 echo "Labeling the current node for registry service"
 docker node update --label-add registry=true $(hostname)
 registry_ip=$(hostname -i)
-# registry_ip="localhost"
 
 if [ -z "$(service_running registry)" ]; then
-    docker service create --name registry --network hbase --publish published=5000,target=5000 registry:2
-    # docker service create --name registry --publish published=5000,target=5000 --constraint 'node.labels.registry == true' registry:2 
+    # docker service create --name registry --network hbase --publish published=5000,target=5000 registry:2
+    docker service create --name registry --publish published=5000,target=5000 --constraint 'node.labels.registry == true' registry:2 
 else
     echo "Registry service is already running"
 fi

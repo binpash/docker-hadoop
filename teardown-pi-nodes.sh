@@ -40,6 +40,7 @@ echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
 cd dish/docker-hadoop
+docker compose -f docker-compose-client.yml down
 nohup ./stop-swarm.sh
 ENDSSH
 }

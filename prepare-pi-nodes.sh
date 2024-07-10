@@ -62,15 +62,17 @@ manager_hostname=$(head -n 1 hostnames.txt)
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
-docker swarm init --advertise-addr $(hostname -i)
+docker swarm init --advertise-addr $manager_hostname
 # docker swarm join-token worker
 ENDSSH
 } | tee swarm_advertise_output.txt
 
-join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed "s/[0-9.]\+:[0-9]\+/$manager_hostname/")
+join_command_raw=$(cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed "s/[0-9.]\+:[0-9]\+/$manager_hostname/")
+# Having --advertise-addr when worker nodes join the swarm is necessary
+#                       to make DNS resolution work for container names.
+# https://github.com/moby/swarmkit/issues/1429#issuecomment-329325410
+join_command="$join_command_raw --advertise-addr \$(hostname -i)"
 
-
-##
 ## Run join command on all swarm workers (execluding manager)
 ##
 echo "join command is: " $join_command
