@@ -8,6 +8,10 @@ fi
 
 # Configuration
 NODE_COUNT=$1
+LOG_DIR="./logs"
+
+# Create logs directory if it doesn't exist
+mkdir -p "$LOG_DIR"
 
 # Function to run tasks on each machine
 run_tasks() {
@@ -18,8 +22,11 @@ run_tasks() {
         # Copy the remote script to the target machine
         scp remote_commands.sh "$HOSTNAME:/tmp/remote_commands.sh"
 
-        # Run the remote script in the background
-        ssh "$HOSTNAME" 'bash /tmp/remote_commands.sh' &
+        # Run the remote script
+        ssh "$HOSTNAME" 'bash /tmp/remote_commands.sh'
+
+        # Copy the worker log back to the current machine
+        scp "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/"
     done
 
     # Wait for all background processes to complete
