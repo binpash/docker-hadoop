@@ -8,8 +8,8 @@ if [[ "$@" == *"resurrect"* ]]; then
 else
   # pull latest changes (added for convenience) and start worker
   cd $PASH_TOP
-  git config --global --add safe.directory /opt/dish/pash
-  git pull
+  # git config --global --add safe.directory /opt/dish/pash
+  # git pull
   cd -
   bash $PASH_TOP/compiler/dspash/worker.sh &> /worker.log &
 fi
