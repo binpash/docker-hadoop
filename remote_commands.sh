@@ -19,12 +19,12 @@ handle_container() {
     PRIVATE_IP=$(head /tmp/worker.log | grep "Worker running on" | awk '{print $4}' | cut -d':' -f1)
 
     if [ -z "$PRIVATE_IP" ]; then
-        echo "No private IP found in worker.log for container $CONTAINER_ID on $HOSTNAME"
+        echo "No private IP found in worker.log for container $CONTAINER_ID on $NODE_HOSTNAME"
         return 1
     fi
 
-    # Save the worker.log with the private IP as the filename
-    mv /tmp/worker.log "/tmp/worker_${PRIVATE_IP}.log"
+    # Save the worker.log with the private IP and hostname as the filename
+    mv /tmp/worker.log "/tmp/worker_${PRIVATE_IP}_${NODE_HOSTNAME}.log"
 
     if [ "$MAIN" = "true" ]; then
         # Run /opt/dish/update.sh --main inside the container
@@ -39,6 +39,6 @@ handle_container() {
 # Check for hadoop container first and handle it, otherwise check for main container
 if ! handle_container "hadoop_datanode" false; then
     if ! handle_container "docker-hadoop-client-1" true; then
-        echo "No suitable container found on $HOSTNAME"
+        echo "No suitable container found on $NODE_HOSTNAME"
     fi
 fi

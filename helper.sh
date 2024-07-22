@@ -17,18 +17,20 @@ mkdir -p "$LOG_DIR"
 run_tasks() {
     local RUN_ID=$1
     for i in $(seq 0 $((NODE_COUNT-1))); do
-        HOSTNAME="node$i"
-        echo "Connecting to $HOSTNAME..."
+        NODE_HOSTNAME="node$i"
+        echo "Connecting to $NODE_HOSTNAME..."
 
         # Copy the remote script to the target machine synchronously
-        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null remote_commands.sh "$HOSTNAME:/tmp/remote_commands.sh" 2>/dev/null
+        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null remote_commands.sh "$NODE_HOSTNAME:/tmp/remote_commands.sh" 2>/dev/null
 
         if [ "$RUN_ID" -eq 0 ]; then
             # Run the remote script and copy the worker log back to the current machine asynchronously
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' 2>/dev/null && scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" 2>/dev/null &
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" "NODE_HOSTNAME='$NODE_HOSTNAME' bash /tmp/remote_commands.sh" 2>/dev/null && \
+            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" 2>/dev/null && \
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' 2>/dev/null &
         else
             # Run the remote script asynchronously
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' 2>/dev/null &
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'bash /tmp/remote_commands.sh' 2>/dev/null &
         fi
     done
 
