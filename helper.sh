@@ -21,14 +21,14 @@ run_tasks() {
         echo "Connecting to $HOSTNAME..."
 
         # Copy the remote script to the target machine synchronously
-        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null helper_remote_commands.sh "$HOSTNAME:/tmp/helper_remote_commands.sh" 2>/dev/null
+        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null remote_commands.sh "$HOSTNAME:/tmp/remote_commands.sh" 2>/dev/null
 
         if [ "$RUN_ID" -eq 0 ]; then
             # Run the remote script and copy the worker log back to the current machine asynchronously
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/helper_remote_commands.sh' 2>/dev/null && scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" 2>/dev/null &
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' 2>/dev/null && scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" 2>/dev/null &
         else
             # Run the remote script asynchronously
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/helper_remote_commands.sh' 2>/dev/null &
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' 2>/dev/null &
         fi
     done
 
