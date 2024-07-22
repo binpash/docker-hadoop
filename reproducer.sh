@@ -21,17 +21,17 @@ while [ $iteration -lt $MAX_ITERATIONS ]; do
     # Delete the outputs folder inside the docker container
     docker exec $DOCKER_CONTAINER bash -c "rm -rf $EVAL_PATH/outputs"
     
-    # Run the first command inside the docker container
-    docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/run.sh"
+    # Run the first command inside the docker container and save output to a file
+    docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/run.sh" &> run_output.txt
     
-    # Run the verify command inside the docker container
-    verify_output=$(docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/verify.sh")
+    # Run the verify command inside the docker container and save output to a file
+    verify_output=$(docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/verify.sh" &> verify_output.txt)
 
-    # Run the helper script on the current machine
-    ./helper.sh 30
+    # Run the helper script on the current machine and save output to a file
+    ./helper.sh 30 &> helper_output.txt
 
     # Check if the verify.sh output contains the string "failed"
-    if echo "$verify_output" | grep -q "failed"; then
+    if grep -q "failed" verify_output.txt; then
         echo "Verification failed. Exiting loop."
         exit 1
     fi
