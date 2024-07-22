@@ -23,12 +23,15 @@ while [ $iteration -lt $MAX_ITERATIONS ]; do
     
     # Run the first command inside the docker container and save output to a file
     docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/run.sh" &> run_output.txt
+    echo "Completed run.sh for iteration $iteration"
     
     # Run the verify command inside the docker container and save output to a file
-    verify_output=$(docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/verify.sh" &> verify_output.txt)
+    docker exec $DOCKER_CONTAINER bash -c "$EVAL_PATH/verify.sh" &> verify_output.txt
+    echo "Completed verify.sh for iteration $iteration"
 
     # Run the helper script on the current machine and save output to a file
     ./helper.sh 30 &> helper_output.txt
+    echo "Completed helper.sh for iteration $iteration"
 
     # Check if the verify.sh output contains the string "failed"
     if grep -q "failed" verify_output.txt; then
