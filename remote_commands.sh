@@ -5,6 +5,8 @@ handle_container() {
     local CONTAINER_NAME=$1
     local MAIN=$2
 
+    echo "Container: $CONTAINER_NAME, Node: $NODE_HOSTNAME"
+
     # Find the container ID
     CONTAINER_ID=$(docker ps --filter "name=$CONTAINER_NAME" --format "{{.ID}}")
 
