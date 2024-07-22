@@ -29,8 +29,9 @@ run_tasks() {
             scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" && \
             ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
         else
-            # Run the remote script asynchronously
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'bash /tmp/remote_commands.sh' &
+            # Run the remote script and remove the worker logs
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'bash /tmp/remote_commands.sh' && \
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
         fi
     done
 
