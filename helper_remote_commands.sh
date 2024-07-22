@@ -28,10 +28,10 @@ handle_container() {
 
     if [ "$MAIN" = "true" ]; then
         # Run /opt/dish/update.sh --main inside the container
-        docker exec -it "$CONTAINER_ID" /opt/dish/update.sh --main
+        docker exec "$CONTAINER_ID" /opt/dish/update.sh --main
     else
         # Run /opt/dish/update.sh inside the container
-        docker exec -it "$CONTAINER_ID" /opt/dish/update.sh
+        docker exec "$CONTAINER_ID" /opt/dish/update.sh
     fi
     return 0
 }
