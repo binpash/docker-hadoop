@@ -15,24 +15,30 @@ mkdir -p "$LOG_DIR"
 
 # Function to run tasks on each machine
 run_tasks() {
-    for i in $(seq 1 $NODE_COUNT); do
+    local RUN_ID=$1
+    for i in $(seq 0 $((NODE_COUNT-1))); do
         HOSTNAME="node$i"
         echo "Connecting to $HOSTNAME..."
 
         # Copy the remote script to the target machine synchronously
         scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null remote_commands.sh "$HOSTNAME:/tmp/remote_commands.sh"
 
-        # Run the remote script and copy the worker log back to the current machine asynchronously
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' && scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" &
+        if [ "$RUN_ID" -eq 0 ]; then
+            # Run the remote script and copy the worker log back to the current machine asynchronously
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' && scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" &
+        else
+            # Run the remote script asynchronously
+            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' &
+        fi
     done
 
     # Wait for all background processes to complete
     wait
 
-    echo "All operations completed."
+    echo "All operations completed for run $RUN_ID."
 }
 
 # Run the tasks twice with a 5-second wait between them
-run_tasks
+run_tasks 0
 sleep 5
-run_tasks
+run_tasks 1
