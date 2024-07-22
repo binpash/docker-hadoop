@@ -30,7 +30,7 @@ run_tasks() {
             ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
         else
             # Run the remote script and remove the worker logs
-            ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" 'bash /tmp/remote_commands.sh' && \
+            ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" "NODE_HOSTNAME='$NODE_HOSTNAME' bash /tmp/remote_commands.sh" && \
             ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
         fi
     done
