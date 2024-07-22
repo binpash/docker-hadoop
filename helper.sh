@@ -21,17 +21,17 @@ run_tasks() {
         echo "Connecting to $NODE_HOSTNAME..."
 
         # Copy the remote script to the target machine synchronously
-        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null remote_commands.sh "$NODE_HOSTNAME:/tmp/remote_commands.sh"
+        scp -o StrictHostKeyChecking=no remote_commands.sh "$NODE_HOSTNAME:/tmp/remote_commands.sh"
 
         if [ "$RUN_ID" -eq 0 ]; then
             # Run the remote script and copy the worker log back to the current machine asynchronously
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" "NODE_HOSTNAME='$NODE_HOSTNAME' bash /tmp/remote_commands.sh" && \
-            scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" && \
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
+            ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" "NODE_HOSTNAME='$NODE_HOSTNAME' bash /tmp/remote_commands.sh" && \
+            scp -o StrictHostKeyChecking=no "$NODE_HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" && \
+            ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
         else
             # Run the remote script and remove the worker logs
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'bash /tmp/remote_commands.sh' && \
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
+            ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" 'bash /tmp/remote_commands.sh' && \
+            ssh -o StrictHostKeyChecking=no "$NODE_HOSTNAME" 'rm /tmp/worker_*.log' &
         fi
     done
 
