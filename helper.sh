@@ -20,10 +20,10 @@ run_tasks() {
         echo "Connecting to $HOSTNAME..."
 
         # Copy the remote script to the target machine synchronously
-        scp remote_commands.sh "$HOSTNAME:/tmp/remote_commands.sh"
+        scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null remote_commands.sh "$HOSTNAME:/tmp/remote_commands.sh"
 
         # Run the remote script and copy the worker log back to the current machine asynchronously
-        ssh "$HOSTNAME" 'bash /tmp/remote_commands.sh' && scp "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" &
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME" 'bash /tmp/remote_commands.sh' && scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$HOSTNAME:/tmp/worker_*.log" "$LOG_DIR/" &
     done
 
     # Wait for all background processes to complete
