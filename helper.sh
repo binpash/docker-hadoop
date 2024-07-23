@@ -41,7 +41,8 @@ run_tasks() {
     echo "All operations completed for run $RUN_ID."
 }
 
-# Run the tasks twice with a 5-second wait between them
+# Run the tasks twice with a 10-second wait between them
 run_tasks 0
-sleep 5
+sleep 10
 run_tasks 1
+sleep 10
