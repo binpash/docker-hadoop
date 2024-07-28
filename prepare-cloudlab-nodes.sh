@@ -16,6 +16,12 @@
 manifest=${1?"ERROR: No cloudlab manifest file given"}
 user=${2?"ERROR: No cloudlab user given"}
 
+## Check if the manifest file starts with "manifest"
+if [[ ! "$manifest" =~ ^manifest ]]; then
+    echo "ERROR: The manifest file must start with 'manifest'"
+    exit 1
+fi
+
 ## Optionally the caller can give us a private key for the ssh
 key=$3
 if [ -z "$key" ]; then
@@ -24,16 +30,19 @@ else
     key_flag="-i ${key}"
 fi
 
-# I commented out the following line because I am manually adding the hostnames to the hostnames.txt file
-# If you want to use manifext file, uncomment the following line
-# grep -o 'hostname="[^\"]*"' "$manifest" | sed -E 's/^.*hostname="([^\]+)".*$/\1/g' | sort -u > hostnames.txt
+# Extract the suffix from the manifest file name
+suffix=$(echo "$manifest" | sed -E 's/^manifest(.*)\.xml$/\1/')
+hostnames_file="hostnames${suffix}.txt"
+
+# grep -o 'hostname="[^\"]*"' "$manifest" | sed -E 's/^.*hostname="([^\]+)".*$/\1/g' | sort -u > "$hostnames_file"
+grep "$user" "$manifest" |  grep -o 'hostname="[^\"]*"' |  sed -E 's/^.*hostname="([^\]+)".*$/\1/g' > "$hostnames_file"
 echo "Hosts:"
-cat hostnames.txt
+cat "$hostnames_file"
 
 ##
 ## Install docker on all cluster machines
 ##
-clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user \
+clush --hostfile "$hostnames_file" -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user \
     -b "curl -fsSL https://get.docker.com -o get-docker.sh && \
         sudo sh get-docker.sh && \
         sudo usermod -aG docker $user"
@@ -42,11 +51,11 @@ clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_
 ## Setup docker location
 ##
 dockerd_config='echo -e "{\n\t\"data-root\": \"/mydata\"\n}"'
-clush --hostfile hostnames.txt -l $user -b "sudo bash -c '$dockerd_config > /etc/docker/daemon.json' && sudo service docker restart"
+clush --hostfile "$hostnames_file" -l $user -b "sudo bash -c '$dockerd_config > /etc/docker/daemon.json' && sudo service docker restart"
 ##
 ## Initialize a swarm from the manager
 ##
-manager_hostname=$(head -n 1 hostnames.txt)
+manager_hostname=$(head -n 1 "$hostnames_file")
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
@@ -60,7 +69,7 @@ join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token"
 ## Run join command on all swarm workers (execluding manager)
 ##
 echo "join command is: " $join_command
-clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b $join_command
+clush --hostfile "$hostnames_file" -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b $join_command
 
 ##
 ## Install our Hadoop infrastructure

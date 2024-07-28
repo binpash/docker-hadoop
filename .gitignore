@@ -2,6 +2,5 @@ data/
 
 # swarm
 swarm_advertise_output.txt
-manifest.xml
-hostnames.txt
-hostnames_old.txt
+hostnames*.txt
+manifest*.xml
