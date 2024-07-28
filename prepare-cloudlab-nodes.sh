@@ -16,8 +16,6 @@
 manifest=${1?"ERROR: No cloudlab manifest file given"}
 user=${2?"ERROR: No cloudlab user given"}
 
-pip install ClusterShell -q
-
 ## Optionally the caller can give us a private key for the ssh
 key=$3
 if [ -z "$key" ]; then
@@ -52,12 +50,11 @@ manager_hostname=$(head -n 1 hostnames.txt)
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
-sudo docker swarm init --advertise-addr $(hostname -i)
-# sudo docker swarm join-token worker
+docker swarm init --advertise-addr $(hostname -i)
 ENDSSH
 } | tee swarm_advertise_output.txt
 
-join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed 's/^/sudo/g')
+join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token")
 
 ##
 ## Run join command on all swarm workers (execluding manager)
@@ -70,10 +67,10 @@ clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag
 ##
 ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
 ## Just checking that the workers have joined
-sudo docker node ls
+docker node ls
 git clone -b ft-orig-optimized https://github.com/binpash/dish.git --recurse-submodules
 cd dish/docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
-nohup sudo ./setup-swarm.sh --eval
+nohup ./setup-swarm.sh --eval
 ENDSSH
