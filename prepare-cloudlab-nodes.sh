@@ -26,7 +26,9 @@ else
     key_flag="-i ${key}"
 fi
 
-grep -o 'hostname="[^\"]*"' "$manifest" | sed -E 's/^.*hostname="([^\]+)".*$/\1/g' | sort -u > hostnames.txt
+# I commented out the following line because I am manually adding the hostnames to the hostnames.txt file
+# If you want to use manifext file, uncomment the following line
+# grep -o 'hostname="[^\"]*"' "$manifest" | sed -E 's/^.*hostname="([^\]+)".*$/\1/g' | sort -u > hostnames.txt
 echo "Hosts:"
 cat hostnames.txt
 
@@ -36,8 +38,7 @@ cat hostnames.txt
 clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user \
     -b "curl -fsSL https://get.docker.com -o get-docker.sh && \
         sudo sh get-docker.sh && \
-        sudo usermod -aG docker $user && \
-        newgrp docker"
+        sudo usermod -aG docker $user"
 
 ##
 ## Setup docker location
