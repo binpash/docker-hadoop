@@ -23,19 +23,18 @@ else
     key_flag="-i ${key}"
 fi
 
-# Check if the clustershell package is installed
-if dpkg -s clustershell &> /dev/null; then
-    echo "clustershell is already installed."
+# Check if clush command is available
+if command -v clush &> /dev/null; then
+    echo "clush is already installed."
 else
-    echo "clustershell is not installed. Installing..."
-    sudo apt update && yes | sudo apt install clustershell
+    echo "Error: clush is not installed. Please install clustershell to proceed." >&2
+    exit 1
 fi
-
 
 ## Remove the Stack, Services, and Network
 ## Execute the teardown script with `nohup` so that it doesn't fail if the ssh connection fails
 echo "Remove the Stack, Services, and Network"
-manager_hostname=$(head -n 1 hostnames.txt)
+manager_hostname=$(head -n 1 hostnames_pi.txt)
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
@@ -47,18 +46,20 @@ ENDSSH
 
 ## Remove worker nodes from the swarm
 echo "Removing all worker nodes from the swarm"
-clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b "docker swarm leave"
+clush --hostfile hostnames_pi.txt -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b "docker swarm leave"
 
 ## Remove the manager node from the swarm
 echo "Removing the manager node from the swarm"
-manager_hostname=$(head -n 1 hostnames.txt)
+manager_hostname=$(head -n 1 hostnames_pi.txt)
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
 docker swarm leave --force
 ENDSSH
 }
 
-
 ## TODO: Remove DiSh folder on all pi-cluster nodes (workers and the manager)
 echo "Removing the dish folder on all pi-cluster nodes"
-clush --hostfile hostnames.txt -O ssh_options="${key_flag}" -l "$user" -b "rm -rf dish"
+clush --hostfile hostnames_pi.txt -O ssh_options="${key_flag}" -l "$user" -b "rm -rf dish"
+
+echo "Pruning all docker images and volumes"
+clush --hostfile hostnames_pi.txt -O ssh_options="${key_flag}" -l "$user" -b "docker system prune -a --volumes -f"

@@ -22,12 +22,12 @@ else
     key_flag="-i ${key}"
 fi
 
-# Check if the clustershell package is installed
-if dpkg -s clustershell &> /dev/null; then
-    echo "clustershell is already installed."
+# Check if clush command is available
+if command -v clush &> /dev/null; then
+    echo "clush is already installed."
 else
-    echo "clustershell is not installed. Installing..."
-    sudo apt update && yes | sudo apt install clustershell
+    echo "Error: clush is not installed. Please install clustershell to proceed." >&2
+    exit 1
 fi
 
 # Initialize the associative array with worker names and IP addresses
@@ -42,23 +42,23 @@ pi_cluster_nodes=(
     # "worker7;10.116.70.114"
 )
 
-# Create or clear the hostnames.txt file
-> hostnames.txt
+# Create or clear the hostnames_pi.txt file
+> hostnames_pi.txt
 
 for pi_cluster_node in ${pi_cluster_nodes[@]}; do
     IFS=";" read -r -a pi_node_parsed <<< "${pi_cluster_node}"
     name="${pi_node_parsed[0]}"
     host="${pi_node_parsed[1]}"
-    echo "${host}" >> hostnames.txt
+    echo "${host}" >> hostnames_pi.txt
 done
 
 echo "Hosts:"
-cat hostnames.txt
+cat hostnames_pi.txt
 
 ##
 ## Initialize a swarm from the manager
 ##
-manager_hostname=$(head -n 1 hostnames.txt)
+manager_hostname=$(head -n 1 hostnames_pi.txt)
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<ENDSSH
@@ -76,7 +76,7 @@ join_command="$join_command_raw --advertise-addr \$(hostname -i)"
 ## Run join command on all swarm workers (execluding manager)
 ##
 echo "join command is: " $join_command
-clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b $join_command
+clush --hostfile hostnames_pi.txt -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b $join_command
 
 ##
 ## Install our Hadoop infrastructure
