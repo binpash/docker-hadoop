@@ -63,3 +63,6 @@ clush --hostfile hostnames_pi.txt -O ssh_options="${key_flag}" -l "$user" -b "rm
 
 echo "Pruning all docker images and volumes"
 clush --hostfile hostnames_pi.txt -O ssh_options="${key_flag}" -l "$user" -b "docker system prune -a --volumes -f"
+
+echo "Removing hadoop related named docker volumes"
+clush --hostfile hostnames_pi.txt -O ssh_options="${key_flag}" -l "$user" -b "docker volume ls -q | grep '^hadoop' | xargs -r docker volume rm"
