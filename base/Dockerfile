@@ -45,6 +45,7 @@ ENV HADOOP_CLASSPATH=/usr/lib/jvm/java-8-openjdk-amd64/lib/tools.jar
 ENV MULTIHOMED_NETWORK=1
 ENV USER=root
 ENV PATH $HADOOP_HOME/bin/:$PATH
+ENV ENABLE_YARN_RECOVERY=1
 
 ADD ./docker-hadoop/base/entrypoint.sh /entrypoint.sh
 

@@ -38,6 +38,24 @@ configure /etc/hadoop/httpfs-site.xml httpfs HTTPFS_CONF
 configure /etc/hadoop/kms-site.xml kms KMS_CONF
 configure /etc/hadoop/mapred-site.xml mapred MAPRED_CONF
 
+if [ "$ENABLE_YARN_RECOVERY" = "1" ]; then
+    echo "Configuring YARN for fault tolerance"
+
+    # YARN ResourceManager Recovery
+    addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.recovery.enabled true
+    addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.store.class org.apache.hadoop.yarn.server.resourcemanager.recovery.FileSystemRMStateStore
+    addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.fs.state-store.uri /rmstate
+
+    # NodeManager settings
+    # addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.recovery.enabled true
+    # addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.recovery.dir /nm-recovery
+
+    # MAPRED
+    addProperty /etc/hadoop/mapred-site.xml mapreduce.map.maxattempts 5
+    addProperty /etc/hadoop/mapred-site.xml mapreduce.reduce.maxattempts 5
+    addProperty /etc/hadoop/mapred-site.xml mapreduce.reduce.speculative true
+fi
+
 if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     echo "Configuring for multihomed network"
 
