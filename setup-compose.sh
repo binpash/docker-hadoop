@@ -5,8 +5,9 @@ else
     export RELEASE="latest"
 fi
 
-## TODO: This should not build the images by default, but should just download them
-make build
+# Set the Docker username
+export DOCKER_USERNAME=${DOCKER_USERNAME:-binpash}
 
+# Run the containers
 # https://docs.docker.com/compose/migrate
 docker-compose up -d || docker compose up -d
