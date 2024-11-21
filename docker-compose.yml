@@ -2,7 +2,7 @@ version: "2.1"
 
 services:
   namenode:
-    image: hadoop-namenode:${RELEASE}
+    image: ${SOURCE}hadoop-namenode:${RELEASE}
     container_name: namenode
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
@@ -14,7 +14,7 @@ services:
       - "9870:9870"
 
   resourcemanager:
-    image: hadoop-resourcemanager:${RELEASE}
+    image: ${SOURCE}hadoop-resourcemanager:${RELEASE}
     container_name: resourcemanager
     restart: on-failure
     depends_on:
@@ -28,7 +28,7 @@ services:
       - "8089:8088"
 
   historyserver:
-    image: hadoop-historyserver:${RELEASE}
+    image: ${SOURCE}hadoop-historyserver:${RELEASE}
     container_name: historyserver
     depends_on:
       - namenode
@@ -42,7 +42,7 @@ services:
       - "8188:8188"
 
   nodemanager1:
-    image: hadoop-nodemanager:${RELEASE}
+    image: ${SOURCE}hadoop-nodemanager:${RELEASE}
     container_name: nodemanager1
     depends_on:
       - namenode
@@ -57,7 +57,7 @@ services:
       - ${PWD}/sample-script.sh:/opt/dish/sample.sh
 
   datanode1:
-    image: hadoop-datanode:${RELEASE}
+    image: ${SOURCE}hadoop-datanode:${RELEASE}
     container_name: datanode1
     depends_on:
       - namenode
@@ -67,7 +67,7 @@ services:
       - ./hadoop.env
 
   datanode2:
-    image: hadoop-datanode:${RELEASE}
+    image: ${SOURCE}hadoop-datanode:${RELEASE}
     container_name: datanode2
     depends_on:
       - namenode
@@ -77,7 +77,7 @@ services:
       - ./hadoop.env
 
   datanode3:
-    image: hadoop-datanode:${RELEASE}
+    image: ${SOURCE}hadoop-datanode:${RELEASE}
     container_name: datanode3
     depends_on:
       - namenode
