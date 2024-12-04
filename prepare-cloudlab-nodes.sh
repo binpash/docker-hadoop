@@ -59,7 +59,7 @@ manager_hostname=$(head -n 1 "$hostnames_file")
 echo "Manager is: $manager_hostname"
 {
 ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
-docker swarm init --advertise-addr $(hostname -i)
+docker swarm init --advertise-addr $(hostname -I | tr ' ' '\n' | grep '^10')
 ENDSSH
 } | tee swarm_advertise_output.txt
 
