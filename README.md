@@ -40,6 +40,21 @@ on all nodes that participated in swarm mode)
 ./clean.sh
 ```
 
+### Multi-node & CloudLab Deployment
+FRACTAL can run on real clusters via Docker Swarm.  We provide helper scripts:
+
+| Script | What it does |
+|--------|--------------|
+| `prepare-cloudlab-nodes.sh` / `teardown-cloudlab-nodes.sh` | Provision Docker on all CloudLab nodes using the manifest • create an overlay network • initialise a Swarm • build and push images, then remove everything at the end |
+| `setup-swarm.sh` / `stop-swarm.sh` | Build images **locally**, launch a Swarm on the current host(s), deploy the stack from `docker-compose-v3.yml`, tear down everything |
+| `setup-pi-swarm.sh` / `teardown-pi-nodes.sh` | Same as above but tuned for Raspberry-Pi ARM clusters (`docker-compose-pi-v3.yml`) |
+| `start-client.sh` | Open a shell inside a `hadoop-pash-base` container with the repo mounted – this is where you run `di.sh` or custom scripts |
+| `dspash-config.json` / `dish-config.json` | Auto-generated mapping from private IPs to worker names; copied into the client container as `pash/cluster.json` so FRACTAL knows the cluster topology |
+
+After deployment check `docker service ls` and then: `docker exec -it docker-hadoop-client-1 bash` to enter the client.
+
+---
+
 <!-- Run example wordcount job:
 ```
   make wordcount
