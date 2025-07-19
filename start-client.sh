@@ -1,4 +1,7 @@
 #!/bin/bash
+
+cd "$(realpath $(dirname "$0"))"
+
 if [ $1 == '--eval' ]; then
     export RELEASE="eval"
 else
