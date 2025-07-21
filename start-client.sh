@@ -19,5 +19,8 @@ fi
 echo "Generating config"
 ./gen_config.sh
 
+sudo apt install nginx -y
+sudo systemctl enable nginx
+
 # https://docs.docker.com/compose/migrate
 docker compose -f docker-compose-client.yml up -d || docker-compose -f docker-compose-client.yml up -d

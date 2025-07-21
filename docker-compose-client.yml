@@ -8,6 +8,7 @@ services:
     volumes:
       - ${PWD}/dspash-config.json:${DISH_TOP}/pash/cluster.json
       - ${PWD}/base/run.sh:/run.sh
+      - /var/www/html:/var/www/html
     environment:
       - CLUSTER_NAME=test
     env_file:
