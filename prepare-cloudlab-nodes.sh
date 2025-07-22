@@ -76,6 +76,7 @@ clush --hostfile "$hostnames_file" -x "$manager_hostname" -O ssh_options="${key_
 ##
 ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
 ## Just checking that the workers have joined
+sudo apt update && sudo apt install -y screen
 docker node ls
 git clone -b nsdi26-ae https://github.com/binpash/dish.git --recurse-submodules
 cd dish/docker-hadoop
