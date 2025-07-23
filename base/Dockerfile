@@ -60,4 +60,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 # This requires source code to be cloned already
 # COPY . /opt/dish
 
-RUN export PATH=$PATH:/usr/local/go/bin && /opt/dish/runtime/scripts/build.sh
+RUN export PATH=$PATH:/usr/local/go/bin && /opt/fractal/runtime/scripts/build.sh
