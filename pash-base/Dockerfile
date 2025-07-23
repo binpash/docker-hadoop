@@ -6,7 +6,8 @@ RUN apt-get update -y && apt-get update --fix-missing
 ##       and not need sudo, it doesn't in this case.
 RUN apt-get install -y git vim iputils-ping sudo jq dnsutils
 ENV PASH_HOST="docker"
-ENV DISH_TOP="/opt/fractal" # Keep it as it in case somewhere DISH_TOP is used
+## Keep it as it in case somewhere DISH_TOP is used
+ENV DISH_TOP="/opt/fractal" 
 ENV FRACTAL_TOP="/opt/fractal"
 ENV PASH_TOP="${DISH_TOP}/pash"
 # download PaSh
