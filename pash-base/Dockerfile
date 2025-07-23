@@ -6,18 +6,19 @@ RUN apt-get update -y && apt-get update --fix-missing
 ##       and not need sudo, it doesn't in this case.
 RUN apt-get install -y git vim iputils-ping sudo jq dnsutils
 ENV PASH_HOST="docker"
-ENV DISH_TOP="/opt/dish"
+ENV DISH_TOP="/opt/fractal" # Keep it as it in case somewhere DISH_TOP is used
+ENV FRACTAL_TOP="/opt/fractal"
 ENV PASH_TOP="${DISH_TOP}/pash"
 # download PaSh
 # RUN git clone https://github.com/binpash/dish.git /opt/dish --recursive
-RUN git clone -b nsdi26-ae https://github.com/binpash/dish.git /opt/dish --recurse-submodules
+RUN git clone -b nsdi26-ae https://github.com/binpash/fractal.git /opt/dish --recurse-submodules
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
 RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
-RUN yes | bash ${DISH_TOP}/scripts/setup-dish.sh
+RUN yes | bash ${FRACTAL_TOP}/scripts/setup-dish.sh
 
 RUN if [ "$RELEASE" = "eval" ]; then \
-    apt-get update && cd ${DISH_TOP}/evaluation && ./install-deps.sh; \
+    apt-get update && cd ${FRACTAL_TOP}/evaluation && ./install-deps.sh; \
     fi
 
 # append for unicode issues

@@ -78,8 +78,8 @@ ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
 ## Just checking that the workers have joined
 sudo apt update && sudo apt install -y screen
 docker node ls
-git clone -b nsdi26-ae https://github.com/binpash/dish.git --recurse-submodules
-cd dish/docker-hadoop
+git clone -b nsdi26-ae https://github.com/binpash/fractal.git --recurse-submodules
+cd fractal/docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
 nohup ./setup-swarm.sh --eval
