@@ -12,7 +12,7 @@ ENV FRACTAL_TOP="/opt/fractal"
 ENV PASH_TOP="${DISH_TOP}/pash"
 # download PaSh
 # RUN git clone https://github.com/binpash/dish.git /opt/dish --recursive
-RUN git clone -b nsdi26-ae https://github.com/binpash/fractal.git /opt/dish --recurse-submodules
+RUN git clone -b nsdi26-ae https://github.com/binpash/fractal.git /opt/fractal --recurse-submodules
 # install PaSh and setup shell paths
 RUN bash ${PASH_TOP}/scripts/distro-deps.sh
 RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
