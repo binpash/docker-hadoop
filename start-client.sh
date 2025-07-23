@@ -21,6 +21,7 @@ echo "Generating config"
 
 sudo apt install nginx -y
 sudo systemctl enable nginx
+hostname -f | sudo tee /var/www/html/hostname > /dev/null
 
 # https://docs.docker.com/compose/migrate
 docker compose -f docker-compose-client.yml up -d || docker-compose -f docker-compose-client.yml up -d
